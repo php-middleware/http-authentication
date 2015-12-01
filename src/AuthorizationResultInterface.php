@@ -18,4 +18,9 @@ interface AuthorizationResultInterface
      * @return array
      */
     public function getChallenge();
+
+    /**
+     * @return array
+     */
+    public function getRequestAttributes();
 }

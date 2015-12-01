@@ -10,7 +10,7 @@ use UnexpectedValueException;
 final class BasicAuthorizationService implements AuthorizationServiceInterface
 {
     const AUTHORIZATION_HEADER = 'Authorization';
-    const SCHEME = 'Digest';
+    const SCHEME = 'Basic';
 
     protected $adapter;
     protected $realm;
@@ -25,13 +25,13 @@ final class BasicAuthorizationService implements AuthorizationServiceInterface
     {
         $header = $request->getHeaderLine(self::AUTHORIZATION_HEADER);
 
-        list($username, $password) = $this->getCredentialsFromHeader($header);
+        list($userID, $password) = $this->getCredentialsFromHeader($header);
 
-        if ($username && $password) {
-            $result = $this->adapter->authenticate($username, $password);
+        if ($userID && $password) {
+            $result = $this->adapter->authenticate($userID, $password);
 
             if ($result === true) {
-                return AuthorizationResult::authorized(self::SCHEME);
+                return AuthorizationResult::authorized(self::SCHEME, [], ['user-ID' => $userID]);
             } elseif ($result === false) {
                 return AuthorizationResult::notAuthorized(self::SCHEME, [
                     'realm' => $this->realm,
@@ -54,9 +54,9 @@ final class BasicAuthorizationService implements AuthorizationServiceInterface
 
         $userPass = $this->findBasicDecodedUserPassString($header);
 
-        if (is_string($userPass) && preg_match('/^(?<username>[0-9a-z]+):(?<password>[0-9a-z]+)$/', $userPass, $matches) === 1) {
+        if (is_string($userPass) && preg_match('/^(?<userID>[0-9a-z]+):(?<password>[0-9a-z]+)$/', $userPass, $matches) === 1) {
             return [
-                $matches['username'],
+                $matches['userID'],
                 $matches['password']
             ];
         }
