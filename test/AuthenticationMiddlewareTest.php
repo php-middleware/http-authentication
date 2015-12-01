@@ -41,13 +41,9 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
     public function testAuthenticated()
     {
         $this->result->expects($this->once())->method('isAuthorized')->willReturn(true);
+        $this->request->expects($this->once())->method('withAttribute');
 
         $this->make200Request($this->request);
-
-        $requestAttributes = $this->request->getAttributes();
-
-        $this->assertArrayHasKey('AuthorizationResult', $requestAttributes);
-        $this->assertNotEmpty($requestAttributes['AuthorizationResult']);
     }
 
     public function testNotAuthenticatedWithoutChallenge()

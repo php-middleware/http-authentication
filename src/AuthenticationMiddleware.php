@@ -19,7 +19,9 @@ final class AuthenticationMiddleware
         $result = $this->service->authorize($request);
 
         if (true === $result->isAuthorized()) {
-            return $out($request, $response);
+            $requestWithAttribute = $request->withAttribute('AuthorizationResult', $result->getRequestAttributes());
+
+            return $out($requestWithAttribute, $response);
         }
 
         $header = $this->buildWwwAuthenticateHeader($result);
