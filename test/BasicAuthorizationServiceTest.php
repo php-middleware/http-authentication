@@ -26,7 +26,7 @@ class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
         $result = $this->service->authorize($this->request);
 
         $this->assertFalse($result->isAuthorized());
-        $this->assertSame(BasicAuthorizationService::SCHEME, $result->getScheme());
+        $this->assertSame('Basic', $result->getScheme());
     }
 
     public function testAuthorize()
@@ -36,7 +36,7 @@ class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
         $result = $this->service->authorize($this->request);
 
         $this->assertTrue($result->isAuthorized());
-        $this->assertSame(BasicAuthorizationService::SCHEME, $result->getScheme());
+        $this->assertSame('Basic', $result->getScheme());
     }
 
     public function testNotAuthorize()
@@ -47,7 +47,7 @@ class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($result->isAuthorized());
         $challenge = $result->getChallenge();
-        $this->assertSame(BasicAuthorizationService::SCHEME, $result->getScheme());
+        $this->assertSame('Basic', $result->getScheme());
         $this->assertArrayHasKey('realm', $challenge);
         $this->assertSame($this->realm, $challenge['realm']);
     }

@@ -10,7 +10,7 @@ use UnexpectedValueException;
 final class BasicAuthorizationService implements AuthorizationServiceInterface
 {
     const AUTHORIZATION_HEADER = 'Authorization';
-    const SCHEME = 'Digest';
+    const SCHEME = 'Basic';
 
     protected $adapter;
     protected $realm;
