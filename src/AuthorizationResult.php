@@ -49,4 +49,8 @@ final class AuthorizationResult implements AuthorizationResultInterface
         return $this->isAuthorized;
     }
 
+    public function getRequestAttributes()
+    {
+        // TODO: Implement getRequestAttributes() method.
+    }
 }

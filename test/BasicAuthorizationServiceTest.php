@@ -9,7 +9,11 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var BasicAuthorizationService
+     */
     protected $service;
+
     protected $adapter;
     protected $realm = 'BarBoo';
     protected $request;
@@ -29,7 +33,7 @@ class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
         $this->assertSame('Basic', $result->getScheme());
     }
 
-    public function testAuthorize()
+    public function testSuccessfulAuthorization()
     {
         $this->request->expects($this->once())->method('getHeaderLine')->with('Authorization')->willReturn('Basic Ym9vOmZvbw==');
         $this->adapter->expects($this->once())->method('authenticate')->willReturn(true);
@@ -37,9 +41,10 @@ class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($result->isAuthorized());
         $this->assertSame('Basic', $result->getScheme());
+        $this->assertArrayHasKey('user-ID', $result->getRequestAttributes());
     }
 
-    public function testNotAuthorize()
+    public function testUnsuccessfulAuthorization()
     {
         $this->request->expects($this->once())->method('getHeaderLine')->with('Authorization')->willReturn('Basic Ym9vOmZvbw==');
         $this->adapter->expects($this->once())->method('authenticate')->willReturn(false);

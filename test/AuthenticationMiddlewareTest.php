@@ -14,8 +14,19 @@ use Zend\Diactoros\Response;
 
 class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var AuthenticationMiddleware
+     */
     protected $middleware;
+
+    /**
+     * @var AuthorizationResultInterface
+     */
     protected $result;
+
+    /**
+     * @var ServerRequestInterface
+     */
     protected $request;
 
     protected function setUp()
@@ -32,9 +43,14 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
         $this->result->expects($this->once())->method('isAuthorized')->willReturn(true);
 
         $this->make200Request($this->request);
+
+        $requestAttributes = $this->request->getAttributes();
+
+        $this->assertArrayHasKey('AuthorizationResult', $requestAttributes);
+        $this->assertNotEmpty($requestAttributes['AuthorizationResult']);
     }
 
-    public function testNotAuthenticatedWithoutChallange()
+    public function testNotAuthenticatedWithoutChallenge()
     {
         $this->result->expects($this->once())->method('isAuthorized')->willReturn(false);
         $this->result->expects($this->once())->method('getChallenge')->willReturn([]);
@@ -46,7 +62,7 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
         $this->assertSame('Boo', $value);
     }
 
-    public function testNotAuthenticatedWithOneChallange()
+    public function testNotAuthenticatedWithOneChallenge()
     {
         $this->result->expects($this->once())->method('isAuthorized')->willReturn(false);
         $this->result->expects($this->once())->method('getChallenge')->willReturn([
@@ -61,7 +77,7 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
     }
 
 
-    public function testNotAuthenticatedWithMultipleChallange()
+    public function testNotAuthenticatedWithMultipleChallenge()
     {
         $this->result->expects($this->once())->method('isAuthorized')->willReturn(false);
         $this->result->expects($this->once())->method('getChallenge')->willReturn([
