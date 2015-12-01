@@ -33,7 +33,7 @@ final class AuthorizationResult implements AuthorizationResultInterface
      * @param array $challenge
      * @param array $attributes
      *
-     * @return AuthorizationResult
+     * @return self
      */
     public static function authorized($scheme, array $challenge = [], array $attributes = [])
     {
@@ -51,7 +51,7 @@ final class AuthorizationResult implements AuthorizationResultInterface
      * @param array $challenge
      * @param array $attributes
      *
-     * @return AuthorizationResult
+     * @return self
      */
     public static function notAuthorized($scheme, array $challenge = [], array $attributes = [])
     {
@@ -91,7 +91,7 @@ final class AuthorizationResult implements AuthorizationResultInterface
     /**
      * @return array
      */
-    public function getRequestAttributes()
+    public function getAttributes()
     {
         return $this->attributes;
     }

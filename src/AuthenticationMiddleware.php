@@ -7,21 +7,34 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class AuthenticationMiddleware
 {
+    /**
+     * @var AuthorizationServiceInterface
+     */
     protected $service;
 
+    /**
+     * @param AuthorizationServiceInterface $service
+     */
     public function __construct(AuthorizationServiceInterface $service)
     {
         $this->service = $service;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param callable $out
+     *
+     * @return ResponseInterface
+     */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $out)
     {
         $result = $this->service->authorize($request);
 
         if (true === $result->isAuthorized()) {
-            $requestWithAttribute = $request->withAttribute('AuthorizationResult', $result->getRequestAttributes());
+            $requestWithResult = $request->withAttribute(AuthorizationResultInterface::class, $result);
 
-            return $out($requestWithAttribute, $response);
+            return $out($requestWithResult, $response);
         }
 
         $header = $this->buildWwwAuthenticateHeader($result);

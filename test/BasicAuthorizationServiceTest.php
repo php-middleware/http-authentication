@@ -41,7 +41,7 @@ class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($result->isAuthorized());
         $this->assertSame('Basic', $result->getScheme());
-        $this->assertArrayHasKey('user-ID', $result->getRequestAttributes());
+        $this->assertArrayHasKey('user-ID', $result->getAttributes());
     }
 
     public function testUnsuccessfulAuthorization()

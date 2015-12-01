@@ -12,26 +12,44 @@ final class BasicAuthorizationService implements AuthorizationServiceInterface
     const AUTHORIZATION_HEADER = 'Authorization';
     const SCHEME = 'Basic';
 
+    /**
+     * @var UserPasswordInterface
+     */
     protected $adapter;
+
+    /**
+     * @var string
+     */
     protected $realm;
 
+    /**
+     * @param UserPasswordInterface $adapter
+     * @param string $realm
+     */
     public function __construct(UserPasswordInterface $adapter, $realm)
     {
         $this->adapter = $adapter;
-        $this->realm = $realm;
+        $this->realm = (string) $realm;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return AuthorizationResultInterface
+     *
+     * @throws UnexpectedValueException
+     */
     public function authorize(ServerRequestInterface $request)
     {
         $header = $request->getHeaderLine(self::AUTHORIZATION_HEADER);
 
-        list($userID, $password) = $this->getCredentialsFromHeader($header);
+        list($userId, $password) = $this->findCredentialsFromHeader($header);
 
-        if ($userID && $password) {
-            $result = $this->adapter->authenticate($userID, $password);
+        if ($userId && $password) {
+            $result = $this->adapter->authenticate($userId, $password);
 
             if ($result === true) {
-                return AuthorizationResult::authorized(self::SCHEME, [], ['user-ID' => $userID]);
+                return AuthorizationResult::authorized(self::SCHEME, [], ['user-ID' => $userId]);
             } elseif ($result === false) {
                 return AuthorizationResult::notAuthorized(self::SCHEME, [
                     'realm' => $this->realm,
@@ -48,7 +66,12 @@ final class BasicAuthorizationService implements AuthorizationServiceInterface
         ]);
     }
 
-    private function getCredentialsFromHeader($header)
+    /**
+     * @param string $header
+     *
+     * @return array|null
+     */
+    private function findCredentialsFromHeader($header)
     {
         $matches = [];
 
@@ -62,12 +85,18 @@ final class BasicAuthorizationService implements AuthorizationServiceInterface
         }
     }
 
+    /**
+     * @param string $header
+     *
+     * @return string|null
+     */
     private function findBasicDecodedUserPassString($header)
     {
         $matches = [];
 
         if (preg_match('/^Basic (?<base64>(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?)$/', $header, $matches) === 1) {
             $base64 = $matches['base64'];
+
             return base64_decode($base64);
         }
     }

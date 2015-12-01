@@ -9,6 +9,6 @@ final class DigestAuthorizationService implements AuthorizationServiceInterface
 {
     public function authorize(ServerRequestInterface $request)
     {
-
+        throw new \BadMethodCallException('Not implemented');
     }
 }

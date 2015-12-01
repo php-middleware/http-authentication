@@ -22,5 +22,5 @@ interface AuthorizationResultInterface
     /**
      * @return array
      */
-    public function getRequestAttributes();
+    public function getAttributes();
 }
