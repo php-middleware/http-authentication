@@ -14,19 +14,10 @@ use Zend\Diactoros\Response;
 
 class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var AuthenticationMiddleware
-     */
     protected $middleware;
 
-    /**
-     * @var AuthorizationResultInterface
-     */
     protected $result;
 
-    /**
-     * @var ServerRequestInterface
-     */
     protected $request;
 
     protected function setUp()
@@ -41,7 +32,8 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
     public function testAuthenticated()
     {
         $this->result->expects($this->once())->method('isAuthorized')->willReturn(true);
-        $this->request->expects($this->once())->method('withAttribute');
+        $this->request->expects($this->once())->method('withAttribute')->willReturn($this->request);
+        $this->request->expects($this->once())->method('getAttribute')->with(AuthorizationResultInterface::class)->willReturn($this->result);
 
         $this->make200Request($this->request);
     }
@@ -94,8 +86,9 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
         $response = new Response();
         $called = false;
 
-        $next = function ($request, $response) use (&$called) {
+        $next = function (ServerRequestInterface $request, ResponseInterface $response) use (&$called) {
             $called = true;
+            $this->assertInstanceOf(AuthorizationResultInterface::class, $request->getAttribute(AuthorizationResultInterface::class));
 
             return $response;
         };
