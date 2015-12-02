@@ -6,6 +6,7 @@ use Exception;
 use PhpMiddleware\HttpAuthentication\AuthenticationMiddleware;
 use PhpMiddleware\HttpAuthentication\AuthorizationResultInterface;
 use PhpMiddleware\HttpAuthentication\AuthorizationServiceInterface;
+use PhpMiddleware\HttpAuthentication\Exception\MissingAuthorizationResult;
 use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,7 +25,7 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         $this->result = $this->getMock(AuthorizationResultInterface::class);
         $service = $this->getMock(AuthorizationServiceInterface::class);
-        $service->expects($this->once())->method('authorize')->willReturn($this->result);
+        $service->method('authorize')->willReturn($this->result);
         $this->middleware = new AuthenticationMiddleware($service);
         $this->request = $this->getMock(ServerRequestInterface::class);
     }
@@ -81,6 +82,13 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
         $this->assertSame('Goo test="boo", boo="bar", baz="bar"', $value);
     }
 
+    public function testThrowExceptionAfterGetResultFromInterfaceBeforeCallMiddleware()
+    {
+        $this->setExpectedException(MissingAuthorizationResult::class);
+
+        $this->middleware->getAuthorizationResult();
+    }
+
     protected function make200Request(ServerRequestInterface $request)
     {
         $response = new Response();
@@ -97,6 +105,7 @@ class AuthenticationMiddlewareTest extends PHPUnit_Framework_TestCase
         $result = call_user_func($this->middleware, $request, $response, $next);
 
         $this->assertTrue($called, 'Next middleware not called');
+        $this->assertInstanceOf(AuthorizationResultInterface::class, $this->middleware->getAuthorizationResult());
 
         return $result;
     }

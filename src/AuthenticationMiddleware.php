@@ -2,6 +2,7 @@
 
 namespace PhpMiddleware\HttpAuthentication;
 
+use PhpMiddleware\HttpAuthentication\Exception\MissingAuthorizationResult;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -11,6 +12,11 @@ final class AuthenticationMiddleware implements AuthorizationResultProviderInter
      * @var AuthorizationServiceInterface
      */
     protected $service;
+
+    /**
+     * @var AuthorizationResultInterface
+     */
+    private $authorizationResult;
 
     /**
      * @param AuthorizationServiceInterface $service
@@ -29,15 +35,15 @@ final class AuthenticationMiddleware implements AuthorizationResultProviderInter
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $out)
     {
-        $result = $this->service->authorize($request);
+        $this->authorizationResult = $this->service->authorize($request);
 
-        if (true === $result->isAuthorized()) {
-            $requestWithResult = $request->withAttribute(AuthorizationResultInterface::class, $result);
+        if (true === $this->authorizationResult->isAuthorized()) {
+            $requestWithResult = $request->withAttribute(AuthorizationResultInterface::class, $this->authorizationResult);
 
             return $out($requestWithResult, $response);
         }
 
-        $header = $this->buildWwwAuthenticateHeader($result);
+        $header = $this->buildWwwAuthenticateHeader($this->authorizationResult);
 
         return $response
                 ->withStatus(401)
@@ -46,10 +52,15 @@ final class AuthenticationMiddleware implements AuthorizationResultProviderInter
 
     /**
      * @return AuthorizationResultInterface
+     *
+     * @throws MissingAuthorizationResult
      */
     public function getAuthorizationResult()
     {
-
+        if ($this->authorizationResult === null) {
+            throw new MissingAuthorizationResult('Middleware must be called first');
+        }
+        return $this->authorizationResult;
     }
 
     /**
