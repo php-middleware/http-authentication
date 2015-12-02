@@ -5,7 +5,7 @@ namespace PhpMiddleware\HttpAuthentication;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class AuthenticationMiddleware
+final class AuthenticationMiddleware implements AuthorizationResultProviderInterface
 {
     /**
      * @var AuthorizationServiceInterface
@@ -42,6 +42,14 @@ final class AuthenticationMiddleware
         return $response
                 ->withStatus(401)
                 ->withHeader('WWW-Authenticate', $header);
+    }
+
+    /**
+     * @return AuthorizationResultInterface
+     */
+    public function getAuthorizationResult()
+    {
+
     }
 
     /**

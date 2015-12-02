@@ -4,7 +4,7 @@ namespace PhpMiddleware\HttpAuthentication;
 
 use PhpMiddleware\HttpAuthentication\Exception\MissingAuthorizationResult;
 
-interface AutorizationResultProviderInterface
+interface AuthorizationResultProviderInterface
 {
     /**
      * @return AuthorizationResultInterface
