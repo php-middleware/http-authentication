@@ -77,7 +77,7 @@ final class BasicAuthorizationService implements AuthorizationServiceInterface
 
         $userPass = $this->findBasicDecodedUserPassString($header);
 
-        if (is_string($userPass) && preg_match('/^(?<userID>[0-9a-z]+):(?<password>[0-9a-z]+)$/', $userPass, $matches) === 1) {
+        if (is_string($userPass) && preg_match('/^(?<userID>[0-9a-zA-Z]+):(?<password>[0-9a-zA-Z]+)$/', $userPass, $matches) === 1) {
             return [
                 $matches['userID'],
                 $matches['password']

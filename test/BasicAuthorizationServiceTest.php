@@ -33,9 +33,14 @@ class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
         $this->assertSame('Basic', $result->getScheme());
     }
 
-    public function testSuccessfulAuthorization()
+    /**
+     * @dataProvider getValidUserPassProvider
+     */
+    public function testSuccessfulAuthorization($userPass)
     {
-        $this->request->expects($this->once())->method('getHeaderLine')->with('Authorization')->willReturn('Basic Ym9vOmZvbw==');
+        $base64UserPass = base64_encode($userPass);
+
+        $this->request->expects($this->once())->method('getHeaderLine')->with('Authorization')->willReturn("Basic {$base64UserPass}");
         $this->adapter->expects($this->once())->method('authenticate')->willReturn(true);
         $result = $this->service->authorize($this->request);
 
@@ -66,5 +71,13 @@ class BasicAuthorizationServiceTest extends PHPUnit_Framework_TestCase
         $result = $this->service->authorize($this->request);
 
         $result->isAuthorized();
+    }
+
+    public function getValidUserPassProvider()
+    {
+        return [
+            ['boo:foo'],
+            ['Boo1:Foo2'],
+        ];
     }
 }
