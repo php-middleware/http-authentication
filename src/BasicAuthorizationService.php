@@ -51,18 +51,14 @@ final class BasicAuthorizationService implements AuthorizationServiceInterface
             if ($result === true) {
                 return AuthorizationResult::authorized(self::SCHEME, [], ['user-ID' => $userId]);
             } elseif ($result === false) {
-                return AuthorizationResult::notAuthorized(self::SCHEME, [
+                return AuthorizationResult::error(self::SCHEME, 'Invalid credentials', 'Login and/or password are invalid', [
                     'realm' => $this->realm,
-                    'error' => 'Invalid credentials',
-                    'error_description' => 'Login and/or password are invalid',
                 ]);
             }
             throw new UnexpectedValueException(sprintf('%s\'s result must be a boolean value', UserPasswordInterface::class));
         }
-        return AuthorizationResult::notAuthorized(self::SCHEME, [
+        return AuthorizationResult::error(self::SCHEME, 'Invalid header', 'Cannot read user-ID and password from header', [
             'realm' => $this->realm,
-            'error' => '',
-            'error_description' => '',
         ]);
     }
 
