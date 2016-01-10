@@ -65,6 +65,27 @@ final class AuthorizationResult implements AuthorizationResultInterface
     }
 
     /**
+     * @param string $scheme
+     * @param array $challenge
+     * @param array $attributes
+     *
+     * @return self
+     */
+    public static function error($scheme, $error, $errorDescription, array $challenge = [], array $attributes = [])
+    {
+        $challenge['error'] = $error;
+        $challenge['error_description'] = $errorDescription;
+
+        $instance = new self();
+        $instance->isAuthorized = false;
+        $instance->scheme = $scheme;
+        $instance->challenge = $challenge;
+        $instance->attributes = $attributes;
+
+        return $instance;
+    }
+
+    /**
      * @return array
      */
     public function getChallenge()
