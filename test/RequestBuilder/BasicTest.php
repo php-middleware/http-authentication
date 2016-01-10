@@ -24,6 +24,6 @@ class BasicTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotSame($this->request, $result);
         $this->assertInstanceOf(RequestInterface::class, $result);
-        $this->assertSame('Basic Ym9vOmZvbwo=', $result->getHeaderLine('Authorization'));
+        $this->assertSame('Basic Ym9vOmZvbw==', $result->getHeaderLine('Authorization'));
     }
 }
