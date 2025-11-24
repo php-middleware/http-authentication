@@ -2,7 +2,10 @@
 
 namespace PhpMiddleware\HttpAuthentication\CredentialAdapter;
 
-final class ArrayUserPassword implements UserPasswordInterface
+use PhpMiddleware\HttpAuthentication\CredentialAdapter\Exception\UsernameNotFoundException;
+use PhpMiddleware\HttpAuthentication\Util;
+
+final class ArrayUserPassword implements UserPasswordInterface, HashProviderInterface
 {
     /**
      * @var array
@@ -25,6 +28,24 @@ final class ArrayUserPassword implements UserPasswordInterface
      */
     public function authenticate($username, $password)
     {
-        return isset($this->users[$username]) && $this->users[$username] === $password;
+        return $this->isUserNameExists($username) && $this->users[$username] === $password;
     }
+
+    private function isUserNameExists($username)
+    {
+        return isset($this->users[$username]);
+    }
+
+    public function getHash($username, $realm)
+    {
+        if (!$this->isUserNameExists($username)) {
+            throw new UsernameNotFoundException('Username does not exist');
+        }
+        return Util::md5Implode([
+            $username,
+            $realm,
+            $this->users[$username],
+        ]);
+    }
+
 }

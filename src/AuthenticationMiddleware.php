@@ -70,28 +70,6 @@ final class AuthenticationMiddleware implements AuthorizationResultProviderInter
      */
     private function buildWwwAuthenticateHeader(AuthorizationResultInterface $result)
     {
-        $scheme = $result->getScheme();
-        $challenge = $this->buildChallengeString($result->getChallenge());
-
-        if (empty($challenge)) {
-            return $scheme;
-        }
-
-        return sprintf('%s %s', $scheme, $challenge);
-    }
-
-    /**
-     * @param array $serviceChallenge
-     *
-     * @return type
-     */
-    private function buildChallengeString(array $serviceChallenge)
-    {
-        $challengePairs = [];
-
-        foreach ($serviceChallenge as $challenge => $value) {
-            $challengePairs[] = sprintf('%s="%s"', $challenge, addslashes($value));
-        }
-        return implode(', ', $challengePairs);
+        return Util::buildHeader($result->getScheme(), $result->getChallenge());
     }
 }

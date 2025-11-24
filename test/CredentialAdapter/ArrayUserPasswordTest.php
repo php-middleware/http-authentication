@@ -3,6 +3,7 @@
 namespace PhpMiddlewareTest\HttpAuthentication\CredentialAdapter;
 
 use PhpMiddleware\HttpAuthentication\CredentialAdapter\ArrayUserPassword;
+use PhpMiddleware\HttpAuthentication\CredentialAdapter\Exception\UsernameNotFoundException;
 use PHPUnit_Framework_TestCase;
 
 class ArrayUserPasswordTest extends PHPUnit_Framework_TestCase
@@ -36,6 +37,20 @@ class ArrayUserPasswordTest extends PHPUnit_Framework_TestCase
         $result = $this->adapter->authenticate($username, $password);
 
         $this->assertFalse($result);
+    }
+
+    public function testGetHash()
+    {
+        $result = $this->adapter->getHash('boo', 'any-realm');
+
+        $this->assertSame(32, strlen($result));
+    }
+
+    public function testInvalidUsername()
+    {
+        $this->setExpectedException(UsernameNotFoundException::class);
+
+        $this->adapter->getHash('baz', 'any-realm');
     }
 
     public function correctDataProvider()
